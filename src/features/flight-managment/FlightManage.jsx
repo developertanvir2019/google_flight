@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, MapPin, Search } from "lucide-react";
 import TopRow from "./components/TopRow";
+import FromOrigin from "./components/FromOrigin";
 
 export default function FlightManage() {
-  const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
@@ -15,7 +15,6 @@ export default function FlightManage() {
   const [tripType, setTripType] = useState("round");
   const [cabinClass, setCabinClass] = useState("economy");
 
-  const [showOriginDropdown, setShowOriginDropdown] = useState(false);
   const [showDestDropdown, setShowDestDropdown] = useState(false);
 
   // Mock airports data - replace with actual API call
@@ -26,21 +25,17 @@ export default function FlightManage() {
   ]);
 
   // Get nearby airports on component mount
-  useEffect(() => {
-    // Mock getting nearby airports - replace with actual API call
-    setOrigin("Dhaka");
-  }, []);
 
   const handleSearch = () => {
-    console.log({
-      origin,
-      destination,
-      departureDate,
-      returnDate,
-      passengers,
-      tripType,
-      cabinClass,
-    });
+    // console.log({
+    //   origin,
+    //   destination,
+    //   departureDate,
+    //   returnDate,
+    //   passengers,
+    //   tripType,
+    //   cabinClass,
+    // });
   };
 
   return (
@@ -59,42 +54,8 @@ export default function FlightManage() {
         {/* Main inputs row */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_2fr] gap-2">
           {/* Origin Input */}
-          <div className="relative">
-            <div
-              onClick={() => setShowOriginDropdown(true)}
-              className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700"
-            >
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder="From where?"
-                className="bg-transparent text-white outline-none w-full"
-              />
-            </div>
-            {showOriginDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-md shadow-lg z-50">
-                <div className="py-1">
-                  {airports.map((airport) => (
-                    <button
-                      key={airport.code}
-                      onClick={() => {
-                        setOrigin(airport.city);
-                        setShowOriginDropdown(false);
-                      }}
-                      className="block w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 text-left"
-                    >
-                      <div>{airport.city}</div>
-                      <div className="text-xs text-gray-500">
-                        {airport.name}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+
+          <FromOrigin />
 
           {/* Destination Input */}
           <div className="relative">

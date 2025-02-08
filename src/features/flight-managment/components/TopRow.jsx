@@ -17,7 +17,7 @@ const TopRow = ({
   return (
     <div className="flex items-center gap-4 mb-4">
       {/* Trip Type Selector */}
-      <div className="relative">
+      <div className="relative min-w-[150px]">
         <button
           onClick={() => setShowTripTypeDropdown(!showTripTypeDropdown)}
           className="flex items-center gap-2 text-gray-300 hover:text-white"
