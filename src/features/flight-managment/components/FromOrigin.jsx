@@ -1,10 +1,11 @@
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import useFetch from "../../../hook/useFetch";
+import SingleFlightItem from "../../../components/ui/SingleFlight";
 const FromOrigin = () => {
-  const [origin, setOrigin] = useState("");
+  const [origin, setOrigin] = useState({});
+  const [totalAirports, setTotalAirports] = useState([]);
   const [showOriginDropdown, setShowOriginDropdown] = useState(false);
-  console.log(origin);
 
   const [coords, setCoords] = useState({ lat: null, lng: null });
 
@@ -29,6 +30,32 @@ const FromOrigin = () => {
     endpoint: "/flights/getNearByAirports",
     params: coords,
   });
+  useEffect(() => {
+    if (airports?.data) {
+      setTotalAirports([airports?.data]);
+      setOrigin(
+        airports?.data?.current?.navigation?.relevantHotelParams?.localizedName
+      );
+    }
+  }, [airports?.data]);
+
+  // search airports
+  const {
+    data: allAirports,
+    loading: searchAirports,
+    error: searchError,
+  } = useFetch({
+    endpoint: "/flights/searchAirport",
+    params: {
+      query: origin,
+    },
+  });
+
+  //   useEffect(() => {
+  //     if (allAirports?.data) {
+  //       setTotalAirports([allAirports?.data]);
+  //     }
+  //   }, [allAirports?.data]);
   return (
     <div className="relative">
       <div
@@ -46,21 +73,15 @@ const FromOrigin = () => {
       </div>
       {showOriginDropdown && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-md shadow-lg z-50">
-          <div className="py-1">
-            {/* {airports.map((airport) => (
-              <button
-                key={airport.code}
-                onClick={() => {
-                  setOrigin(airport.city);
-                  setShowOriginDropdown(false);
-                }}
-                className="block w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 text-left"
-              >
-                <div>{airport.city}</div>
-                <div className="text-xs text-gray-500">{airport.name}</div>
-              </button>
-            ))} */}
-          </div>
+          {totalAirports?.length > 0 &&
+            totalAirports?.map((origin, i) => (
+              <div key={i} className="py-1">
+                <SingleFlightItem
+                  origin={origin}
+                  setShowOriginDropdown={setShowOriginDropdown}
+                />
+              </div>
+            ))}
         </div>
       )}
     </div>

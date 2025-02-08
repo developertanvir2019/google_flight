@@ -13,7 +13,7 @@ const useFetch = ({ endpoint, params }) => {
         const response = await axios.get(endpoint, {
           params: params,
         });
-        setData(response?.data?.data);
+        setData(response?.data);
       } catch (err) {
         console.log("Error fetching data:", err);
         setError(err);
@@ -23,7 +23,7 @@ const useFetch = ({ endpoint, params }) => {
     };
 
     fetchData();
-  }, [endpoint, params]);
+  }, [endpoint, JSON.stringify(params)]);
 
   return { data, loading, error };
 };
