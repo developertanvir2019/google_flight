@@ -51,11 +51,7 @@ const FromOrigin = () => {
     },
   });
 
-  //   useEffect(() => {
-  //     if (allAirports?.data) {
-  //       setTotalAirports([allAirports?.data]);
-  //     }
-  //   }, [allAirports?.data]);
+  console.log("new54", allAirports);
   return (
     <div className="relative">
       <div
@@ -71,17 +67,43 @@ const FromOrigin = () => {
           className="bg-transparent text-white outline-none w-full"
         />
       </div>
-      {showOriginDropdown && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-md shadow-lg z-50">
-          {totalAirports?.length > 0 &&
-            totalAirports?.map((origin, i) => (
-              <div key={i} className="py-1">
-                <SingleFlightItem
-                  origin={origin}
-                  setShowOriginDropdown={setShowOriginDropdown}
-                />
-              </div>
-            ))}
+      {showOriginDropdown && origin?.length > 0 && (
+        <div className="absolute top-full w-[400px] left-0 right-0 mt-2 bg-gray-800 rounded-md shadow-lg z-50">
+          {allAirports?.data?.[0]?.skyId ==
+            totalAirports?.[0]?.current?.skyId &&
+          allAirports?.data?.length < 2 ? (
+            <>
+              {totalAirports?.length > 0 &&
+                totalAirports?.map((origin, i) => (
+                  <div key={i} className="py-1">
+                    <SingleFlightItem
+                      origin={origin}
+                      setShowOriginDropdown={setShowOriginDropdown}
+                    />
+                  </div>
+                ))}
+            </>
+          ) : (
+            <>
+              {allAirports?.data?.length > 0 &&
+                allAirports?.data?.map((or, i) => (
+                  <div
+                    key={(origin, i)}
+                    className="py-1 "
+                    onClick={() =>
+                      setOrigin(
+                        origin?.navigation?.relevantHotelParams?.localizedName
+                      )
+                    }
+                  >
+                    <SingleFlightItem
+                      origin={or}
+                      setShowOriginDropdown={setShowOriginDropdown}
+                    />
+                  </div>
+                ))}
+            </>
+          )}
         </div>
       )}
     </div>
