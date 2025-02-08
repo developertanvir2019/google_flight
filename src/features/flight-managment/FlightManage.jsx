@@ -6,15 +6,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Calendar, MapPin, Search } from "lucide-react";
 import TopRow from "./components/TopRow";
 import FromOrigin from "./components/FromOrigin";
+import ToOrigin from "./components/ToOrigin";
+import useFetch from "../../hook/useFetch";
 
 export default function FlightManage() {
-  const [destination, setDestination] = useState("");
+  const [fromOrigin, setFromOrigin] = useState({});
+  const [toOrigin, setToOrigin] = useState({});
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [passengers, setPassengers] = useState(1);
   const [tripType, setTripType] = useState("round");
   const [cabinClass, setCabinClass] = useState("economy");
-
   const [showDestDropdown, setShowDestDropdown] = useState(false);
 
   // Mock airports data - replace with actual API call
@@ -25,17 +27,35 @@ export default function FlightManage() {
   ]);
 
   // Get nearby airports on component mount
-
-  const handleSearch = () => {
-    // console.log({
-    //   origin,
-    //   destination,
-    //   departureDate,
-    //   returnDate,
-    //   passengers,
-    //   tripType,
-    //   cabinClass,
-    // });
+  const [flights, setFlights] = useState([]);
+  const handleSearchFlights = () => {
+    console.log("object");
+    if (
+      fromOrigin?.skyId &&
+      toOrigin?.skyId &&
+      fromOrigin?.entityId &&
+      toOrigin?.entityId &&
+      departureDate
+    ) {
+      const { data: flightsData } = useFetch({
+        endpoint: "/flights/searchFlights",
+        params: {
+          originSkyId: fromOrigin?.skyId,
+          destinationSkyId: toOrigin.skyId,
+          originEntityId: fromOrigin?.entityId,
+          destinationEntityId: toOrigin.entityId,
+          date: departureDate,
+          returnDate: returnDate || undefined, // Optional
+          adults: passengers,
+          cabinClass,
+        },
+      });
+      if (flightsData?.data) {
+        setFlights(flightsData.data);
+      }
+    } else {
+      alert("Please fill in all required fields.");
+    }
   };
 
   return (
@@ -55,45 +75,10 @@ export default function FlightManage() {
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_2fr] gap-2">
           {/* Origin Input */}
 
-          <FromOrigin />
+          <FromOrigin setFromOrigin={setFromOrigin} />
 
           {/* Destination Input */}
-          <div className="relative">
-            <div
-              onClick={() => setShowDestDropdown(true)}
-              className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700"
-            >
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="Where to?"
-                className="bg-transparent text-white outline-none w-full"
-              />
-            </div>
-            {showDestDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-md shadow-lg z-50">
-                <div className="py-1">
-                  {airports.map((airport) => (
-                    <button
-                      key={airport.code}
-                      onClick={() => {
-                        setDestination(airport.city);
-                        setShowDestDropdown(false);
-                      }}
-                      className="block w-full px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 text-left"
-                    >
-                      <div>{airport.city}</div>
-                      <div className="text-xs text-gray-500">
-                        {airport.name}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <ToOrigin setToOrigin={setToOrigin} />
 
           {/* Date Picker */}
           <div className="flex items-center bg-gray-800 rounded-lg p-4">
@@ -125,7 +110,7 @@ export default function FlightManage() {
         {/* Search Button */}
         <div className="flex justify-center mt-6">
           <button
-            onClick={handleSearch}
+            onClick={handleSearchFlights}
             className="flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium transition-colors"
           >
             <Search className="w-4 h-4" />

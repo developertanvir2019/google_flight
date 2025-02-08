@@ -2,8 +2,8 @@ import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import useFetch from "../../../hook/useFetch";
 import SingleFlightItem from "../../../components/ui/SingleFlight";
-const FromOrigin = () => {
-  const [origin, setOrigin] = useState({});
+const FromOrigin = ({ setFromOrigin }) => {
+  const [origin, setOrigin] = useState("");
   const [totalAirports, setTotalAirports] = useState([]);
   const [showOriginDropdown, setShowOriginDropdown] = useState(false);
 
@@ -33,6 +33,7 @@ const FromOrigin = () => {
   useEffect(() => {
     if (airports?.data) {
       setTotalAirports([airports?.data]);
+      setFromOrigin(airports?.data?.current);
       setOrigin(
         airports?.data?.current?.navigation?.relevantHotelParams?.localizedName
       );
@@ -51,7 +52,6 @@ const FromOrigin = () => {
     },
   });
 
-  console.log("new54", allAirports);
   return (
     <div className="relative">
       <div
@@ -90,11 +90,12 @@ const FromOrigin = () => {
                   <div
                     key={(origin, i)}
                     className="py-1 "
-                    onClick={() =>
+                    onClick={() => {
                       setOrigin(
                         origin?.navigation?.relevantHotelParams?.localizedName
-                      )
-                    }
+                      ),
+                        setFromOrigin(or);
+                    }}
                   >
                     <SingleFlightItem
                       origin={or}

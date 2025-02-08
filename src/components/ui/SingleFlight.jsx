@@ -2,7 +2,6 @@
 import { MapPin, Plane, ChevronUp } from "lucide-react";
 
 export default function SingleFlightItem({ origin, setShowOriginDropdown }) {
-  console.log("tanvir", origin);
   return (
     <div
       onClick={() => {
