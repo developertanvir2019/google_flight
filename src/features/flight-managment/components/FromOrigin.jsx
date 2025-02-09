@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import useFetch from "../../../hook/useFetch";

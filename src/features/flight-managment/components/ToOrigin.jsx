@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { MapPin } from "lucide-react";
 import { useState } from "react";
 import useFetch from "../../../hook/useFetch";
 import SingleFlightItem from "../../../components/ui/SingleFlight";
+// eslint-disable-next-line react/prop-types
 const ToOrigin = ({ setToOrigin }) => {
   const [origin, setOrigin] = useState("");
   const [showOriginDropdown, setShowOriginDropdown] = useState(false);

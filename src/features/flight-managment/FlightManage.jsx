@@ -19,11 +19,7 @@ export default function FlightManage() {
   const [tripType, setTripType] = useState("round");
   const [cabinClass, setCabinClass] = useState("economy");
   const [searchParams, setSearchParams] = useState(null);
-  const {
-    data: flightsData,
-    error,
-    loading,
-  } = useFetch({
+  const { data: flightsData, loading } = useFetch({
     endpoint: searchParams ? "/flights/searchFlights" : null,
     params: searchParams || {},
   });
@@ -62,8 +58,8 @@ export default function FlightManage() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
-      <div className="bg-gray-900 rounded-lg p-4 shadow-xl">
+    <div className="w-full max-w-4xl mx-auto p-0 md:p-6 ">
+      <div className="bg-gray-900 rounded-lg p-4">
         <TopRow
           tripType={tripType}
           setTripType={setTripType}
@@ -78,18 +74,21 @@ export default function FlightManage() {
           <ToOrigin setToOrigin={setToOrigin} />
 
           <div className="flex items-center bg-gray-800 rounded-lg p-4">
-            <Calendar className="w-5 h-5 text-gray-400 mr-3" />
-            <div className="flex gap-4">
-              <DatePicker
-                selected={departureDate}
-                onChange={(date) => setDepartureDate(date)}
-                placeholderText="Departure"
-                className="bg-transparent text-white outline-none cursor-pointer"
-                dateFormat="MMM d, yyyy"
-              />
+            <div className="md:flex block  gap-4">
+              <div className="flex justify-start items-center mb-5 md:mb-auto">
+                <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+                <DatePicker
+                  selected={departureDate}
+                  onChange={(date) => setDepartureDate(date)}
+                  placeholderText="Departure"
+                  className="bg-transparent text-white outline-none cursor-pointer"
+                  dateFormat="MMM d, yyyy"
+                />
+              </div>
+              <div className="text-gray-500 hidden md:block">|</div>
               {tripType === "round" && (
-                <>
-                  <div className="text-gray-500">|</div>
+                <div className="flex justify-start items-center">
+                  <Calendar className="w-5 h-5  text-gray-400 mr-3" />
                   <DatePicker
                     selected={returnDate}
                     onChange={(date) => setReturnDate(date)}
@@ -97,7 +96,7 @@ export default function FlightManage() {
                     className="bg-transparent text-white outline-none cursor-pointer"
                     dateFormat="MMM d, yyyy"
                   />
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -116,7 +115,7 @@ export default function FlightManage() {
         {/* Display Flights */}
         <div className="mt-4 text-white">
           {loading ? (
-            <div>
+            <div className="my-12 text-center">
               <p>Loading......</p>
             </div>
           ) : (
@@ -135,7 +134,10 @@ export default function FlightManage() {
                   ))}
                 </div>
               ) : (
-                !loading && <p>No flights found.</p>
+                !loading &&
+                flightsData?.data && (
+                  <p className="my-12 text-center">No flights found.</p>
+                )
               )}
             </>
           )}

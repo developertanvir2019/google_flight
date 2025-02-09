@@ -41,7 +41,9 @@ const TopRow = ({
           onClick={() => setShowPassengersDropdown(!showPassengersDropdown)}
           className="flex items-center gap-2 text-gray-300 hover:text-white"
         >
-          <span>{passengers} Passenger</span>
+          <p className="text-nowrap flex items-center gap-2">
+            {passengers} <span className="md:block hidden">Passenger</span>
+          </p>
           <ChevronDown className="w-4 h-4" />
         </button>
         {showPassengersDropdown && (
