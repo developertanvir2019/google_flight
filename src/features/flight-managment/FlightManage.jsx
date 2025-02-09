@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Calendar, MapPin, Search } from "lucide-react";
+import { Calendar, Search } from "lucide-react";
 import TopRow from "./components/TopRow";
 import FromOrigin from "./components/FromOrigin";
 import ToOrigin from "./components/ToOrigin";
 import useFetch from "../../hook/useFetch";
+import FlightDetails from "./components/FlightDetails";
 
 export default function FlightManage() {
   const [fromOrigin, setFromOrigin] = useState({});
@@ -17,19 +18,27 @@ export default function FlightManage() {
   const [passengers, setPassengers] = useState(1);
   const [tripType, setTripType] = useState("round");
   const [cabinClass, setCabinClass] = useState("economy");
-  const [showDestDropdown, setShowDestDropdown] = useState(false);
+  const [searchParams, setSearchParams] = useState(null);
+  const {
+    data: flightsData,
+    error,
+    loading,
+  } = useFetch({
+    endpoint: searchParams ? "/flights/searchFlights" : null,
+    params: searchParams || {},
+  });
 
-  // Mock airports data - replace with actual API call
-  const [airports, setAirports] = useState([
-    { code: "DAC", city: "Dhaka", name: "Hazrat Shahjalal International" },
-    { code: "CGP", city: "Chittagong", name: "Shah Amanat International" },
-    { code: "ZYL", city: "Sylhet", name: "Osmani International" },
-  ]);
+  useEffect(() => {
+    if (flightsData?.data) {
+      console.log("Flights Found:", flightsData.data);
+    }
+  }, [flightsData]);
 
-  // Get nearby airports on component mount
-  const [flights, setFlights] = useState([]);
   const handleSearchFlights = () => {
-    console.log("object");
+    const formattedDepartureDate = departureDate.toISOString().split("T")[0];
+    const formattedReturnDate = returnDate
+      ? returnDate.toISOString().split("T")[0]
+      : undefined;
     if (
       fromOrigin?.skyId &&
       toOrigin?.skyId &&
@@ -37,22 +46,16 @@ export default function FlightManage() {
       toOrigin?.entityId &&
       departureDate
     ) {
-      const { data: flightsData } = useFetch({
-        endpoint: "/flights/searchFlights",
-        params: {
-          originSkyId: fromOrigin?.skyId,
-          destinationSkyId: toOrigin.skyId,
-          originEntityId: fromOrigin?.entityId,
-          destinationEntityId: toOrigin.entityId,
-          date: departureDate,
-          returnDate: returnDate || undefined, // Optional
-          adults: passengers,
-          cabinClass,
-        },
+      setSearchParams({
+        originSkyId: fromOrigin.skyId,
+        destinationSkyId: toOrigin.skyId,
+        originEntityId: fromOrigin.entityId,
+        destinationEntityId: toOrigin.entityId,
+        date: formattedDepartureDate,
+        returnDate: formattedReturnDate || undefined,
+        adults: passengers,
+        cabinClass,
       });
-      if (flightsData?.data) {
-        setFlights(flightsData.data);
-      }
     } else {
       alert("Please fill in all required fields.");
     }
@@ -61,7 +64,6 @@ export default function FlightManage() {
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
       <div className="bg-gray-900 rounded-lg p-4 shadow-xl">
-        {/* Top row selectors */}
         <TopRow
           tripType={tripType}
           setTripType={setTripType}
@@ -71,16 +73,10 @@ export default function FlightManage() {
           setCabinClass={setCabinClass}
         />
 
-        {/* Main inputs row */}
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_2fr] gap-2">
-          {/* Origin Input */}
-
           <FromOrigin setFromOrigin={setFromOrigin} />
-
-          {/* Destination Input */}
           <ToOrigin setToOrigin={setToOrigin} />
 
-          {/* Date Picker */}
           <div className="flex items-center bg-gray-800 rounded-lg p-4">
             <Calendar className="w-5 h-5 text-gray-400 mr-3" />
             <div className="flex gap-4">
@@ -107,15 +103,42 @@ export default function FlightManage() {
           </div>
         </div>
 
-        {/* Search Button */}
         <div className="flex justify-center mt-6">
           <button
             onClick={handleSearchFlights}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium transition-colors"
+            className="flex items-center cursor-pointer gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium transition-colors"
           >
             <Search className="w-4 h-4" />
-            Explore
+            {loading ? "Searching..." : "Explore"}
           </button>
+        </div>
+
+        {/* Display Flights */}
+        <div className="mt-4 text-white">
+          {loading ? (
+            <div>
+              <p>Loading......</p>
+            </div>
+          ) : (
+            <>
+              {flightsData?.data?.itineraries?.length > 0 ? (
+                <div>
+                  {flightsData.data.itineraries.map((flight) => (
+                    <div
+                      key={flight?.id}
+                      className="p-2 bg-gray-700 my-2 rounded "
+                    >
+                      {/* <p>Flight: {flight.name}</p>
+                      <p>Price: {flight.price}</p> */}
+                      <FlightDetails flight={flight} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                !loading && <p>No flights found.</p>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
