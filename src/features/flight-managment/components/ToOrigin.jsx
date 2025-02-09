@@ -45,7 +45,7 @@ const ToOrigin = ({ setToOrigin }) => {
                   className="py-1 "
                   onClick={() => {
                     setOrigin(
-                      origin?.navigation?.relevantHotelParams?.localizedName
+                      or?.navigation?.relevantHotelParams?.localizedName
                     ),
                       setToOrigin(or);
                   }}
